@@ -1,0 +1,45 @@
+stages:
+  - build
+  - docker-build
+  - deploy
+
+variables:
+  MAVEN_CLI_OPTS: "-B -DskipTests"
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
+
+services:
+  - docker:dind
+
+before_script:
+  - apt-get update && apt-get install -y maven
+
+build_test1:
+  stage: build
+  script:
+    - cd test1-service
+    - mvn $MAVEN_CLI_OPTS clean package
+
+build_test2:
+  stage: build
+  script:
+    - cd test2-service
+    - mvn $MAVEN_CLI_OPTS clean package
+
+build_demo:
+  stage: build
+  script:
+    - cd demo-test-gitlab
+    - mvn $MAVEN_CLI_OPTS clean package
+
+docker_build:
+  stage: docker-build
+  script:
+    - docker build -t test1-service ./test1-service
+    - docker build -t test2-service ./test2-service
+    - docker build -t demo-test-gitlab ./demo-test-gitlab
+
+deploy:
+  stage: deploy
+  script:
+    - docker-compose up -d
