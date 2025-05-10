@@ -1,0 +1,80 @@
+# Namespace
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: gitlabtest-app
+
+---
+
+# Config Server
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test1-service
+  namespace: gitlabtest-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test1-service
+  template:
+    metadata:
+      labels:
+        app: test1-service
+    spec:
+      containers:
+        - name: test1-service
+          image: demo-test-gitlab-service1:latest
+          ports:
+            - containerPort: 9991
+---
+apiVersion: v1
+kind: test1-service
+metadata:
+  name: test1-service
+  namespace: gitlabtest-app
+spec:
+  selector:
+    app: test1-service
+  ports:
+    - port: 9991
+      targetPort: 9991
+
+---
+
+# Config Server
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test2-service
+  namespace: gitlabtest-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test2-service
+  template:
+    metadata:
+      labels:
+        app: test2-service
+    spec:
+      containers:
+        - name: test2-service
+          image: demo-test-gitlab-service2:latest
+          ports:
+            - containerPort: 9909
+---
+apiVersion: v1
+kind: test2-service
+metadata:
+  name: test2-service
+  namespace: gitlabtest-app
+spec:
+  selector:
+    app: test2-service
+  ports:
+    - port: 9909
+      targetPort: 9909
+
+---
+
